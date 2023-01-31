@@ -1,0 +1,33 @@
+{
+    "name": "vue element",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_icon": {
+            "16": "_assets/icon16.png",
+            "48": "_assets/icon48.png",
+            "128": "_assets/icon128.png"
+        },
+        "default_title": "Vue Popup"
+    },
+    "icons": {
+        "16": "_assets/icon16.png",
+        "48": "_assets/icon48.png",
+        "128": "_assets/icon128.png"
+    },
+    "background": {
+        "service_worker": "background.ts"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content-scripts/main.ts"],
+            "css": ["content-scripts/main.css"]
+        },
+        {
+            "matches": ["https://www.list.am/category/60/*"],
+            "css": ["calculate/calculate.css"],
+            "js": ["calculate/calculate.ts"]
+        }
+    ]
+}
