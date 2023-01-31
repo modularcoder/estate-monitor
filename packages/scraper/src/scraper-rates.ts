@@ -1,9 +1,5 @@
 import playwright from 'playwright'
-import { prependOnceListener } from 'process'
-
-interface Rates {
-  usd: number
-}
+import { Rates } from './_types'
 
 type Execute = () => Promise<Rates | undefined>
 

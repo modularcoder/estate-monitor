@@ -1,10 +1,25 @@
 import playwright from 'playwright'
+import { Rates } from './_types'
+
+const NAME = 'list.am RENT batch extractor'
 
 // const playwright = require('playwright');
 const data: any[] = []
 
-export const execute = async (options = { numPages: 5 }) => {
-  console.log('Starting list sell executor')
+type ExecuteOptions = {
+  rates: Rates
+  numPages?: number
+}
+
+type Execute = (options: ExecuteOptions) => Promise<void>
+
+export const execute: Execute = async ({ rates, numPages = 1 }) => {
+  if (!rates) {
+    console.log(`Rates are not provided for ${NAME}, exiting process`)
+    return
+  }
+
+  console.log(`Starting ${NAME}`)
 
   const browser = await playwright['chromium'].launch({
     headless: true,

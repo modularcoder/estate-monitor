@@ -19,14 +19,14 @@ console.log('Starting scraper process...')
     }
 
     // // Items for sale
-    // await executeSell({
-    //   rates,
-    // })
+    await executeSell({
+      rates,
+    })
 
     // // Items for rent
-    // await executeRent({
-    //   rates,
-    // })
+    await executeRent({
+      rates,
+    })
   } catch (e) {
     console.log('Error:')
     console.error(e)
