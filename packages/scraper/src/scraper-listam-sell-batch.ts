@@ -13,7 +13,7 @@ export const execute = async (options = { numPages: 5 }) => {
   const context = await browser.newContext()
   const page = await context.newPage()
 
-  await page.goto('https://www.list.am/category/60?n=1')
+  await page.goto('https://www.list.am/category/60?type=1&n=1&crc=-1')
 
   console.log('waiting...')
 

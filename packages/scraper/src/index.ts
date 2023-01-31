@@ -1,3 +1,4 @@
+import { execute as executeRates } from './scraper-rates'
 import { execute as executeSell } from './scraper-listam-sell-batch'
 import { execute as executeRent } from './scraper-listam-rent-batch'
 
@@ -9,11 +10,23 @@ console.log('Starting scraper process...')
 // setInterval(() => {
 ;(async () => {
   try {
-    // Items for sale
-    await executeSell()
+    // Get exchange rates
+    const rates = await executeRates()
 
-    // Items for rent
-    await executeRent()
+    if (!rates) {
+      console.error('Rates are not defined, stopping execution process')
+      return false
+    }
+
+    // // Items for sale
+    // await executeSell({
+    //   rates,
+    // })
+
+    // // Items for rent
+    // await executeRent({
+    //   rates,
+    // })
   } catch (e) {
     console.log('Error:')
     console.error(e)
