@@ -1,4 +1,4 @@
 export enum CURRENCIES {
-  AMD = 'amd',
-  USD = 'usd',
+  AMD = 'AMD',
+  USD = 'USD',
 }

@@ -1,3 +1,3 @@
 export interface Rates {
-  usd: number
+  USD: number
 }
