@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "jest-cucumber": "^3.0.1",
+    "lodash": "^4.17.21",
     "playwright": "^1.30.0"
   }
 }

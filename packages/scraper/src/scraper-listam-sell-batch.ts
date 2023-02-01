@@ -1,5 +1,6 @@
 import playwright from 'playwright'
 import { Rates } from './_types'
+import { getRandomProxyServer } from './_services/proxyServersService'
 
 const NAME = 'list.am SELL batch extractor'
 
@@ -24,6 +25,9 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
   const browser = await playwright['chromium'].launch({
     headless: true,
     args: ['--no-sandbox'],
+    // proxy: {
+    //   server: getRandomProxyServer(),
+    // },
   })
   const context = await browser.newContext()
   const page = await context.newPage()
