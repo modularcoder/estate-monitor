@@ -1,6 +1,7 @@
 import playwright from 'playwright'
 import { Rates } from './_types'
 import { getRandomProxyServer } from './_services/proxyServersService'
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 const NAME = 'list.am SELL batch extractor'
 
@@ -26,10 +27,16 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
     headless: true,
     args: ['--no-sandbox'],
     // proxy: {
-    //   server: getRandomProxyServer(),
+    //   // server: 'proxy.zenrows.com:8001',
+    //   // username: 'a2feb822f2d3fb0fffca6bf974440245ecf9bbb8',
+    //   // password: '',
+    //   // server:
+    //   // 'http://a2feb822f2d3fb0fffca6bf974440245ecf9bbb8:@proxy.zenrows.com:8001', //getRandomProxyServer(),
     // },
   })
-  const context = await browser.newContext()
+  const context = await browser.newContext({
+    ignoreHTTPSErrors: true,
+  })
   const page = await context.newPage()
 
   await page.goto('https://www.list.am/category/60?type=1&n=1&crc=-1')

@@ -22,7 +22,11 @@ export interface Listing {
   source: ListingSource
   type: 'rent' | 'sell'
   category: 'apartment' | 'land' | 'commercial'
-  postedAt: string
+  isProcessed: boolean
+  isUnavailable: boolean
+  extCreatedAt: string
+  extUpdatedAt: string
+  createdAt: string
   updatedAt: string
   processedAt?: string
   meta: ListingMeta

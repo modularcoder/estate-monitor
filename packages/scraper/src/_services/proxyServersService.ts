@@ -1,4 +1,5 @@
 // https://proxyscrape.com/free-proxy-list-clean
+// https://www.zenrows.com/pricing
 
 export const proxies = [
   '110.164.15.182:8080',
