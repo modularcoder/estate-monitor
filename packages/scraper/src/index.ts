@@ -12,26 +12,26 @@ console.log('Starting scraper process...')
 // setInterval(() => {
 ;(async () => {
   try {
-    // Create listing record
-    await db.listing.create({
-      data: {
-        title: `Hello ${Math.random()}`,
-        tagline: 'World',
-        extId: 'string',
-        extUrl: 'string',
-        source: 'string',
-        type: 'string',
-        category: 'string',
-        isProcessed: false,
-        isUnavailable: false,
-        extCreatedAt: new Date(),
-        extUpdatedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        processedAt: new Date(),
-        meta: {},
-      },
-    })
+    // // Create listing record
+    // await db.listing.create({
+    //   data: {
+    //     title: `Hello ${Math.random()}`,
+    //     tagline: 'World',
+    //     extId: 'string',
+    //     extUrl: 'string',
+    //     source: 'string',
+    //     type: 'string',
+    //     category: 'string',
+    //     isProcessed: false,
+    //     isUnavailable: false,
+    //     extCreatedAt: new Date(),
+    //     extUpdatedAt: new Date(),
+    //     createdAt: new Date(),
+    //     updatedAt: new Date(),
+    //     processedAt: new Date(),
+    //     meta: {},
+    //   },
+    // })
 
     // Get exchange rates
     const rates = await executeRates()
@@ -44,6 +44,7 @@ console.log('Starting scraper process...')
     // Items for sale
     await executeSell({
       rates,
+      numPages: 2,
     })
 
     // // Items for rent

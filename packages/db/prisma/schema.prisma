@@ -11,21 +11,87 @@ datasource db {
 }
 
 
-model Listing {
-  id         Int @id @default(autoincrement())
-  title      String     @db.VarChar(200)
-  tagline    String     @db.VarChar(200)
-  extId      String
-  extUrl     String
-  source     String
-  type       String
-  category   String
-  isProcessed Boolean @default(false)
-  isUnavailable Boolean @default(false)
-  extCreatedAt DateTime
-  extUpdatedAt DateTime
-  createdAt DateTime
-  updatedAt DateTime
-  processedAt DateTime
-  meta  Json
+enum ListingType {
+  SELL
+  RENT
 }
+
+enum BuildingType {
+  STONE
+  PANEL
+  MONOLITH
+}
+
+enum RenovationType {
+  ZERO
+  OLD
+  LIGHT
+  AVERAGE
+  MODERN
+  ADVANCED
+}
+
+enum City {
+  YEREVAN
+}
+
+enum District {
+  // Yerevan
+  AJAPNYAK
+  ARABKIR
+  AVAN
+  DAVITASHEN
+  EREBUNI
+  QANAQER
+  KENTRON
+  MALATIA
+  NORQ
+  SHENGAVIT
+  MARASH
+  NUBARASHEN
+}
+
+
+model ListingApartment {
+  id         Int      @id @default(autoincrement())
+  source     String   @db.VarChar(255)
+  extId      String   @db.VarChar(255)
+  extUrl     String   @db.VarChar(255)
+
+  rawPrice   String?   @db.VarChar(255)
+  rawTitle   String?   @db.VarChar(255)
+  rawMeta    String?   @db.VarChar(255)
+  rawExcerpt String?
+  rawContent String?
+
+  city       District
+  district   String      @db.VarChar(255)
+  address    String?     @db.VarChar(255)
+
+  type       ListingType?
+  buildingType BuildingType?
+  renovationType RenovationType?
+
+  statNoRooms Int
+  statArea    Int
+  statPriceAmd Int
+  statPriceUsd Int
+  statPricePerMeterAmd Int
+  statPricePerMeterUsd Int
+  statExchangeRate Int
+  statBuildingFloors Int
+  statFloor Int
+  statFloorIsLast Boolean? @default(false)
+  statFloorIsFirst Boolean? @default(false)
+
+  date DateTime @default(now())
+  isProcessed Boolean? @default(false)
+  isUnavailable Boolean? @default(false)
+  extCreatedAt DateTime?
+  extUpdatedAt DateTime?
+  createdAt DateTime    @default(now())
+  meta  Json?
+}
+
+
+

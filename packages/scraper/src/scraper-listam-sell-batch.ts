@@ -1,5 +1,6 @@
 import playwright from 'playwright'
 import { Rates } from './_types'
+import dbService from './_services/dbServie'
 import { getRandomProxyServer } from './_services/proxyServersService'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
@@ -38,29 +39,49 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
     ignoreHTTPSErrors: true,
   })
   const page = await context.newPage()
-
-  await page.goto('https://www.list.am/category/60?type=1&n=1&crc=-1')
+  const pagesArray = Array.from({ length: numPages }, (v, i) => i)
 
   console.log('waiting...')
 
+  const pagesResults = []
+  for (const pageNum of pagesArray) {
+    pagesResults.push(await executePage({ page, pageNum }))
+  }
+
+  console.log('Pages results', JSON.stringify(pagesResults, null, 2))
+
+  console.info('Closing the browser')
+  await browser.close()
+}
+
+const executePage = async ({
+  pageNum,
+  page,
+}: {
+  pageNum: number
+  page: playwright.Page
+}) => {
+  const url = `https://www.list.am/category/60${
+    pageNum > 1 ? `/${pageNum}` : ''
+  }?type=1&n=1&crc=-1`
+
+  await page.goto(url)
   await page.waitForSelector('.dlf')
 
-  const items = await page.$$('.gl a')
+  const itemElements = await page.$$('.gl a')
+  const items = []
 
-  console.info(`Found ${items.length} items for sell`)
+  console.info(`Page ${pageNum}: Found ${itemElements.length} items for sell`)
 
-  // items.forEach((item) => {
-
-  // })
-
-  for (const item of items) {
+  // Process items from DOM
+  for (const element of itemElements) {
     try {
-      const href = await item.getAttribute('href')
+      const href = await element.getAttribute('href')
       const extId = href?.split('/')[2]
       const extUrl = `https://list.am${href}`
-      const titleContent = await item.$eval('.l', (el) => el.textContent)
-      const priceContent = await item.$eval('.p', (el) => el.textContent)
-      const metaContent = await item.$eval('.at', (el) => el.textContent)
+      const titleContent = await element.$eval('.l', (el) => el.textContent)
+      const priceContent = await element.$eval('.p', (el) => el.textContent)
+      const metaContent = await element.$eval('.at', (el) => el.textContent)
 
       const dataItem = {
         extId,
@@ -70,28 +91,14 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
         metaContent,
       }
 
-      console.log('Sell data item:', dataItem)
+      items.push(dataItem)
+
+      // console.log('Sell data item:', dataItem)
     } catch (e) {
       // Bad item, skip
       continue
     }
   }
 
-  //   for (const post of posts) {
-  //     const title = await post.$eval('.title a', (el) => el.textContent);
-  //     const url = await post.$eval('.title a', (el) => el.href);
-  //     const upvotes = await post.$eval('.score.unvoted', (el) => el.textContent);
-  //     const comments = await post.$eval('.comments', (el) => el.textContent);
-  //     const time = await post.$eval('.tagline time', (el) => el.textContent);
-  //     data.push({ title, url, upvotes, comments, time });
-  //   }
-  //   console.log(data);
-  //   console.log(data.length);
-
-  console.info('Closing the browser')
-  await browser.close()
+  return items
 }
-
-// const executePage = async (url) => {
-
-// }
