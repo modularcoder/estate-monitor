@@ -4,7 +4,8 @@
     "scripts": {
       "start:scraper": "npm run start --workspace=@estate-monitor/scraper",
       "dev:scraper": "npm run dev --workspace=@estate-monitor/scraper",
-      "build:scraper": "npm run build --workspace=@estate-monitor/scraper "
+      "build:scraper": "npm run build --workspace=@estate-monitor/scraper ",
+      "dev:db": "npm run preview --workspace=@estate-monitor/db"
     },
     "devDependencies": {},
     "workspaces": [
