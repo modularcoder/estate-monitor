@@ -44,7 +44,7 @@ console.log('Starting scraper process...')
     // Items for sale
     await executeSell({
       rates,
-      numPages: 2,
+      numPages: 1,
     })
 
     // // Items for rent

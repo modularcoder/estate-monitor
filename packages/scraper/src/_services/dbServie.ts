@@ -1,4 +1,6 @@
-import { PrismaClient } from '../../../db/src/index'
+import { PrismaClient } from '../../../_core/src/index'
+
+export * from '../../../_core/src/index'
 
 const prisma = new PrismaClient()
 

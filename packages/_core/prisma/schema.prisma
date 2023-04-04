@@ -10,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ListingSource {
+  LISTAM
+}
 
 enum ListingType {
   SELL
@@ -47,14 +50,15 @@ enum District {
   MALATIA
   NORQ
   SHENGAVIT
-  MARASH
+  NORQMARASH
   NUBARASHEN
 }
 
 
 model ListingApartment {
   id         Int      @id @default(autoincrement())
-  source     String   @db.VarChar(255)
+  source     ListingSource
+  type       ListingType
   extId      String   @db.VarChar(255)
   extUrl     String   @db.VarChar(255)
 
@@ -64,21 +68,20 @@ model ListingApartment {
   rawExcerpt String?
   rawContent String?
 
-  city       District
-  district   String      @db.VarChar(255)
+  city       City
+  district   District
   address    String?     @db.VarChar(255)
 
-  type       ListingType?
   buildingType BuildingType?
   renovationType RenovationType?
 
   statNoRooms Int
-  statArea    Int
-  statPriceAmd Int
-  statPriceUsd Int
-  statPricePerMeterAmd Int
-  statPricePerMeterUsd Int
-  statExchangeRate Int
+  statArea    Float
+  statPriceAmd Float
+  statPriceUsd Float
+  statPricePerMeterAmd Float
+  statPricePerMeterUsd Float
+  statExchangeRate Float
   statBuildingFloors Int
   statFloor Int
   statFloorIsLast Boolean? @default(false)
@@ -87,8 +90,9 @@ model ListingApartment {
   date DateTime @default(now())
   isProcessed Boolean? @default(false)
   isUnavailable Boolean? @default(false)
-  extCreatedAt DateTime?
   extUpdatedAt DateTime?
+  extCreatedAt DateTime?
+  updatedAt DateTime    @updatedAt
   createdAt DateTime    @default(now())
   meta  Json?
 }
