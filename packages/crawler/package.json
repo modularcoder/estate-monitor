@@ -1,5 +1,5 @@
 {
-  "name": "@estate-monitor/scraper",
+  "name": "@estate-monitor/crawler",
   "version": "1.0.0",
   "description": "A basic typescript app starter for 2023.",
   "main": "index.js",

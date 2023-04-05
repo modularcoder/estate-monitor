@@ -3,10 +3,10 @@
     "private": true,
     "scripts": {
         "dev:app": "npm run dev --workspace=@estate-monitor/app",
-        "dev:scraper": "npm run dev --workspace=@estate-monitor/scraper",
+        "dev:crawler": "npm run dev --workspace=@estate-monitor/crawler",
         "start:app": "npm run start --workspace=@estate-monitor/app",
-        "start:scraper": "npm run start --workspace=@estate-monitor/scraper",
-        "build:scraper": "npm run build --workspace=@estate-monitor/scraper ",
+        "start:crawler": "npm run start --workspace=@estate-monitor/crawler",
+        "build:crawler": "npm run build --workspace=@estate-monitor/crawler ",
         "build:app": "npm run build --workspace=@estate-monitor/app",
         "dev:db": "npm run preview --workspace=@estate-monitor/db"
     },
