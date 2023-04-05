@@ -2,16 +2,18 @@
     "name": "estate-monitor",
     "private": true,
     "scripts": {
-      "dev:app": "npm run dev --workspace=@estate-monitor/app",
-      "dev:scraper": "npm run dev --workspace=@estate-monitor/scraper",
-      "start:app": "npm run start --workspace=@estate-monitor/app",
-      "start:scraper": "npm run start --workspace=@estate-monitor/scraper",
-      "build:scraper": "npm run build --workspace=@estate-monitor/scraper ",
-      "build:app": "npm run build --workspace=@estate-monitor/app",
-      "dev:db": "npm run preview --workspace=@estate-monitor/db"
+        "dev:app": "npm run dev --workspace=@estate-monitor/app",
+        "dev:scraper": "npm run dev --workspace=@estate-monitor/scraper",
+        "start:app": "npm run start --workspace=@estate-monitor/app",
+        "start:scraper": "npm run start --workspace=@estate-monitor/scraper",
+        "build:scraper": "npm run build --workspace=@estate-monitor/scraper ",
+        "build:app": "npm run build --workspace=@estate-monitor/app",
+        "dev:db": "npm run preview --workspace=@estate-monitor/db"
     },
-    "devDependencies": {},
     "workspaces": [
-      "packages/*"
-    ]
-  }
+        "packages/*"
+    ],
+    "dependencies": {
+        "date-fns": "^2.29.3"
+    }
+}

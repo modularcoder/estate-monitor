@@ -1,8 +1,9 @@
-import playwright from 'playwright'
+import playwright, { ElementHandle } from 'playwright'
+import { subDays } from 'date-fns'
 import { Rates } from './_types'
-import dbService from './_services/dbServie'
+import dbService, { type Prisma } from './_services/dbServie'
 import { districtCodesByName } from './_services/districtsService'
-import { getRandomProxyServer } from './_services/proxyServersService'
+// import { getRandomProxyServer } from './_services/proxyServersService'
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 const NAME = 'list.am SELL batch extractor'
@@ -13,9 +14,6 @@ type ExecuteOptions = {
 }
 
 type Execute = (options: ExecuteOptions) => Promise<void>
-
-// const playwright = require('playwright');
-const data: any[] = []
 
 export const execute: Execute = async ({ rates, numPages = 1 }) => {
   if (!rates) {
@@ -40,7 +38,7 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
     ignoreHTTPSErrors: true,
   })
   const page = await context.newPage()
-  const pagesArray = Array.from({ length: numPages }, (v, i) => i)
+  const pagesArray = Array.from({ length: numPages }, (v, i) => i + 1)
 
   console.log('waiting...')
 
@@ -49,7 +47,7 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
     pagesResults.push(await executePage({ page, pageNum, rates }))
   }
 
-  console.log('Pages results', JSON.stringify(pagesResults, null, 2))
+  // console.log('Pages results', JSON.stringify(pagesResults, null, 2))
 
   console.info('Closing the browser')
   await browser.close()
@@ -74,146 +72,160 @@ const executePage = async ({
   const itemElements = await page.$$('.gl a')
   const items = []
 
-  console.info(`Page ${pageNum}: Found ${itemElements.length} items for sell`)
-
   // Process items from DOM
   for (const element of itemElements) {
-    try {
-      const href = await element.getAttribute('href')
-      const extId = href?.split('/')[2]
-      const extUrl = `https://list.am${href}`
-      const rawTitle = await element.$eval('.l', (el) => el.textContent)
-      const rawPrice = await element.$eval('.p', (el) => el.textContent)
-      const rawMeta = await element.$eval('.at', (el) => el.textContent)
+    const dataItem = await getListDataItem({ element, rates })
 
-      if (!rawTitle || !rawPrice || !rawMeta) {
-        continue
-      }
-
-      console.log('rawPrice', rawPrice)
-
-      let listingCurrency
-      if (rawPrice.includes('$')) {
-        listingCurrency = 'USD'
-      } else if (rawPrice.includes('֏')) {
-        listingCurrency = 'AMD'
-      }
-
-      console.log('listingCurrency', listingCurrency)
-
-      if (!listingCurrency) {
-        continue
-      }
-
-      const priceStr = rawPrice.replace(/[^a-z0-9]/gi, '')
-
-      const metaParts = rawMeta.split(',')
-      const metaPartsDistrict = metaParts[0]
-      const metaPartsNoRooms = metaParts[1].replace(/[^a-z0-9]/gi, '')
-      const metaPartsArea = metaParts[2].replace(/[^a-z0-9]/gi, '')
-      const metaPartsFloors = metaParts[3]
-      const metaPartsFloor = metaPartsFloors.split('/')
-      const metaPartsFloorListing = metaPartsFloor[0]
-      const metaPartsFloorBuilding = metaPartsFloor[1]
-
-      const district = districtCodesByName[metaPartsDistrict]
-
-      const statArea = parseInt(metaPartsArea)
-      const statNoRooms = parseInt(metaPartsNoRooms)
-
-      const statPriceUsd =
-        listingCurrency === 'USD'
-          ? parseInt(priceStr, 10)
-          : listingCurrency === 'AMD'
-          ? parseInt(priceStr, 10) / rates.USD
-          : null
-      const statPriceAmd =
-        listingCurrency === 'AMD'
-          ? parseInt(priceStr, 10)
-          : listingCurrency === 'USD'
-          ? parseInt(priceStr, 10) * rates.USD
-          : null
-
-      console.log('statPriceUsd', statPriceUsd)
-      console.log('statPriceAmd', statPriceAmd)
-
-      if (!statPriceAmd || !statPriceUsd) {
-        continue
-      }
-
-      const statPricePerMeterAmd = statPriceAmd / statArea
-      const statPricePerMeterUsd = statPriceUsd / statArea
-
-      const statExchangeRate = rates.USD
-
-      const statFloor = parseInt(metaPartsFloorListing)
-      const statBuildingFloors = parseInt(metaPartsFloorBuilding)
-      const statFloorIsFirst = statFloor === 1
-      const statFloorIsLast = statFloor === statBuildingFloors
-
-      // Valudate
-      if (!extId) {
-        continue
-      }
-
-      const dataItem = {
-        type: 'SELL',
-        source: 'LISTAM',
-        extId,
-        extUrl,
-        rawTitle,
-        rawPrice,
-        rawMeta,
-        city: 'YEREVAN',
-        district,
-        statNoRooms,
-        statArea,
-        statPriceAmd,
-        statPriceUsd,
-        statPricePerMeterAmd,
-        statPricePerMeterUsd,
-        statExchangeRate,
-        statBuildingFloors,
-        statFloor,
-        statFloorIsLast,
-        statFloorIsFirst,
-      }
-
-      items.push(dataItem)
-
-      await dbService.listingApartment.create({
-        data: {
-          type: 'SELL',
-          source: 'LISTAM',
-          extId,
-          extUrl,
-          rawTitle,
-          rawPrice,
-          rawMeta,
-          city: 'YEREVAN',
-          district,
-          statNoRooms,
-          statArea,
-          statPriceAmd,
-          statPriceUsd,
-          statPricePerMeterAmd,
-          statPricePerMeterUsd,
-          statExchangeRate,
-          statBuildingFloors,
-          statFloor,
-          statFloorIsLast,
-          statFloorIsFirst,
-        },
-      })
-
-      // console.log('Sell data item:', dataItem)
-    } catch (e) {
-      // Bad item, skip
-      console.error(e)
-
+    if (!dataItem) {
       continue
     }
+
+    items.push(dataItem)
   }
 
+  console.info(`Page ${pageNum}: Found ${items.length} valid items for sell`)
+
+  // We want to exclude items which were already injected during last 2 weeks
+  const existingItems = await dbService.listingApartment.findMany({
+    select: {
+      extId: true,
+    },
+    where: {
+      extId: {
+        in: items.map((item) => item.extId),
+      },
+      createdAt: {
+        gte: subDays(new Date(), 14),
+      },
+    },
+  })
+
+  const existingItemsIds = existingItems.map(({ extId }) => extId)
+
+  console.info(
+    `Page ${pageNum}: Skip ${existingItems.length} items, which were already injected during last 2 weeks`,
+  )
+
+  const itemsNew = items.filter(
+    (item) => !existingItemsIds.includes(item.extId),
+  )
+
+  const createMany = await dbService.listingApartment.createMany({
+    data: itemsNew,
+  })
+
+  console.info(`Page ${pageNum}: ${createMany.count} items injected`)
+
   return items
+}
+
+async function getListDataItem({
+  element,
+  rates,
+}: {
+  element: ElementHandle
+  rates: Rates
+}) {
+  try {
+    const href = await element.getAttribute('href')
+    const extId = href?.split('/')[2]
+    const extUrl = `https://list.am${href}`
+    const rawTitle = await element.$eval('.l', (el) => el.textContent)
+    const rawPrice = await element.$eval('.p', (el) => el.textContent)
+    const rawMeta = await element.$eval('.at', (el) => el.textContent)
+
+    if (!rawTitle || !rawPrice || !rawMeta) {
+      return null
+    }
+
+    let listingCurrency
+    if (rawPrice.includes('$')) {
+      listingCurrency = 'USD'
+    } else if (rawPrice.includes('֏')) {
+      listingCurrency = 'AMD'
+    }
+
+    if (!listingCurrency) {
+      return null
+    }
+
+    const priceStr = rawPrice.replace(/[^a-z0-9]/gi, '')
+
+    const metaParts = rawMeta.split(',')
+    const metaPartsDistrict = metaParts[0]
+    const metaPartsNoRooms = metaParts[1].replace(/[^a-z0-9]/gi, '')
+    const metaPartsArea = metaParts[2].replace(/[^a-z0-9]/gi, '')
+    const metaPartsFloors = metaParts[3]
+    const metaPartsFloor = metaPartsFloors.split('/')
+    const metaPartsFloorListing = metaPartsFloor[0]
+    const metaPartsFloorBuilding = metaPartsFloor[1]
+
+    const district = districtCodesByName[metaPartsDistrict]
+
+    const statArea = parseInt(metaPartsArea)
+    const statNoRooms = parseInt(metaPartsNoRooms)
+
+    const statPriceUsd =
+      listingCurrency === 'USD'
+        ? parseInt(priceStr, 10)
+        : listingCurrency === 'AMD'
+        ? parseInt(priceStr, 10) / rates.USD
+        : null
+    const statPriceAmd =
+      listingCurrency === 'AMD'
+        ? parseInt(priceStr, 10)
+        : listingCurrency === 'USD'
+        ? parseInt(priceStr, 10) * rates.USD
+        : null
+
+    if (!statPriceAmd || !statPriceUsd) {
+      return null
+    }
+
+    const statPricePerMeterAmd = statPriceAmd / statArea
+    const statPricePerMeterUsd = statPriceUsd / statArea
+
+    const statExchangeRate = rates.USD
+
+    const statFloor = parseInt(metaPartsFloorListing)
+    const statBuildingFloors = parseInt(metaPartsFloorBuilding)
+    const statFloorIsFirst = statFloor === 1
+    const statFloorIsLast = statFloor === statBuildingFloors
+
+    // Valudate
+    if (!extId) {
+      return null
+    }
+
+    const dataItem: Prisma.ListingApartmentCreateInput = {
+      type: 'SELL',
+      source: 'LISTAM',
+      extId,
+      extUrl,
+      rawTitle,
+      rawPrice,
+      rawMeta,
+      city: 'YEREVAN',
+      district,
+      statNoRooms,
+      statArea,
+      statPriceAmd,
+      statPriceUsd,
+      statPricePerMeterAmd,
+      statPricePerMeterUsd,
+      statExchangeRate,
+      statBuildingFloors,
+      statFloor,
+      statFloorIsLast,
+      statFloorIsFirst,
+    }
+
+    return dataItem
+    // console.log('Sell data item:', dataItem)
+  } catch (e) {
+    // Bad item, skip
+    // console.error(e)
+
+    return null
+  }
 }
