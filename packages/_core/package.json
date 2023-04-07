@@ -1,10 +1,11 @@
 {
-  "name": "@estate-monitor/db",
+  "name": "@estate-monitor/core",
   "version": "1.0.0",
   "description": "A basic typescript app starter for 2023.",
   "main": "index.js",
   "scripts": {
-    "preview": "npx prisma studio",
+    "preview": "prisma studio",
+    "generate": "prisma generate",
     "build": "rimraf ./dist && tsc",
     "dev": "npx nodemon",
     "start": "npm run build && node dist/index.js",

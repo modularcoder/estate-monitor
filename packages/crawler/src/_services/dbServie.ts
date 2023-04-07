@@ -1,6 +1,6 @@
-import { PrismaClient } from '../../../_core/src/index'
+import { PrismaClient } from '@prisma/client'
 
-export * from '../../../_core/src/index'
+export * from '@prisma/client'
 
 const prisma = new PrismaClient({
   log: ['query', 'error', 'info', 'warn'],
