@@ -1,5 +1,5 @@
 // https://www.list.am/category/56?type=1&n=1&crc=-1
-
+//
 import { chromium, Page } from 'playwright'
 import { subDays } from 'date-fns'
 import { Rates } from '../_types'
