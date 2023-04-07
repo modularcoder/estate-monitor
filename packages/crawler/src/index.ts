@@ -8,10 +8,10 @@ import { execute as executeRent } from './_crawlers/listamRentBatch'
 
 // 60 minutes by default
 const CRAWL_INTERVAL = process.env.CRAWL_INTERVAL
-  ? parseInt(process.env.CRAWL_INTERVAL)
+  ? parseInt(process.env.CRAWL_INTERVAL) * 1000
   : 30 * 1000 * 60
 
-console.log(`Crawl interval set to ${CRAWL_INTERVAL}`)
+console.log(`Crawl interval set to ${CRAWL_INTERVAL / 1000} seconds`)
 
 async function start() {
   try {
