@@ -1,5 +1,6 @@
 import { chromium } from 'playwright'
 import { Rates } from '../_types'
+import dbService from '../_services/dbServie'
 
 type Execute = () => Promise<Rates | undefined>
 
@@ -7,6 +8,19 @@ type Execute = () => Promise<Rates | undefined>
 // https://www.cba.am/_layouts/rssreader.aspx?rss=280F57B8-763C-4EE4-90E0-8136C13E47DA
 
 export const execute: Execute = async () => {
+  // Trying to get the last data point, if it's today, then return it as a value
+  const foundRate = await dbService.rate.findUnique({
+    where: {
+      date: new Date(),
+    },
+  })
+
+  if (foundRate) {
+    return {
+      USD: foundRate.usd,
+    }
+  }
+
   console.log('Starting CBA exchange rates extractor')
 
   const browser = await chromium.launch({
@@ -39,6 +53,14 @@ export const execute: Execute = async () => {
     }
 
     console.log('Rates extracted: ', rates)
+    // console.log('Store the rates in the DB')
+
+    await dbService.rate.create({
+      data: {
+        date: new Date(),
+        usd: usdValue,
+      },
+    })
 
     return rates
   } catch (err) {
