@@ -16,9 +16,18 @@ export const getEstateListItemData = async ({
     const href = await element.getAttribute('href')
     const extId = href?.split('/')[2]
     const extUrl = `https://list.am${href}`
-    const rawTitle = await element.$eval('.l', (el) => el.textContent)
-    const rawPrice = await element.$eval('.p', (el) => el.textContent)
-    const rawMeta = await element.$eval('.at', (el) => el.textContent)
+    const rawTitle: string | undefined = await element.$eval(
+      '.l',
+      (el) => el.textContent,
+    )
+    const rawPrice: string | undefined = await element.$eval(
+      '.p',
+      (el) => el.textContent,
+    )
+    const rawMeta: string | undefined = await element.$eval(
+      '.at',
+      (el) => el.textContent,
+    )
 
     if (!rawTitle || !rawPrice || !rawMeta) {
       return null
@@ -47,6 +56,8 @@ export const getEstateListItemData = async ({
     const metaPartsFloorBuilding = metaPartsFloor[1]
 
     const district = districtCodesByName[metaPartsDistrict]
+
+    const isNewDevelopment = rawTitle.toLowerCase().includes('նորակառույց')
 
     const statArea = parseInt(metaPartsArea)
     const statNoRooms = parseInt(metaPartsNoRooms)
@@ -93,6 +104,7 @@ export const getEstateListItemData = async ({
       rawMeta,
       city: 'YEREVAN',
       district,
+      isNewDevelopment,
       statNoRooms,
       statArea,
       statPriceAmd,

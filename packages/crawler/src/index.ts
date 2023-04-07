@@ -1,16 +1,19 @@
+import { config as dotenvConfig } from 'dotenv'
+
+dotenvConfig()
+
 import { execute as executeRates } from './_crawlers/cbaRates'
 import { execute as executeSell } from './_crawlers/listamSellBatch'
 import { execute as executeRent } from './_crawlers/listamRentBatch'
 
-import db from './_services/dbServie'
+// 60 minutes by default
+const CRAWL_INTERVAL = process.env.CRAWL_INTERVAL
+  ? parseInt(process.env.CRAWL_INTERVAL)
+  : 30 * 1000 * 60
 
-// 5 minutes
-const SCRAPE_INTERVAL = 1000 * 60 * 5
+console.log(`Crawl interval set to ${CRAWL_INTERVAL}`)
 
-console.log('Starting scraper process...')
-
-// setInterval(() => {
-;(async () => {
+async function start() {
   try {
     // Get exchange rates
     const rates = await executeRates()
@@ -35,6 +38,8 @@ console.log('Starting scraper process...')
     console.log('Error:')
     console.error(e)
   }
-})()
+}
 
-// }, SCRAPE_INTERVAL);
+start()
+
+setInterval(start, CRAWL_INTERVAL)

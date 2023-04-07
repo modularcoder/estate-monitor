@@ -1,4 +1,4 @@
-import playwright from 'playwright'
+import { chromium, Page } from 'playwright'
 import { subDays } from 'date-fns'
 import { Rates } from '../_types'
 import dbService from '../_services/dbServie'
@@ -24,7 +24,7 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
 
   console.log(`${NAME} starting `)
 
-  const browser = await playwright['chromium'].launch({
+  const browser = await chromium.launch({
     headless: true,
     args: ['--no-sandbox'],
     // proxy: {
@@ -56,7 +56,7 @@ const executePage = async ({
   rates,
 }: {
   pageNum: number
-  page: playwright.Page
+  page: Page
   rates: Rates
 }) => {
   const url = `https://www.list.am/category/60${

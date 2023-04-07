@@ -1,4 +1,4 @@
-import playwright from 'playwright'
+import { chromium } from 'playwright'
 import { Rates } from '../_types'
 
 type Execute = () => Promise<Rates | undefined>
@@ -9,7 +9,7 @@ type Execute = () => Promise<Rates | undefined>
 export const execute: Execute = async () => {
   console.log('Starting CBA exchange rates extractor')
 
-  const browser = await playwright['chromium'].launch({
+  const browser = await chromium.launch({
     headless: true,
     args: ['--no-sandbox'],
   })

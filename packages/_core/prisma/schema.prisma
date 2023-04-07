@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 
@@ -75,6 +76,7 @@ model ListingApartment {
 
   buildingType BuildingType?
   renovationType RenovationType?
+  isNewDevelopment Boolean?
 
   statNoRooms Int
   statArea    Float
