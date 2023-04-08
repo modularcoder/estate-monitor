@@ -7,6 +7,7 @@ import { api } from "@/utils/api";
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
+
   return (
     <>
       <Head>
@@ -51,7 +52,7 @@ const Home: NextPage = () => {
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             </p>
           </div> */}
-        
+
       </main>
     </>
   );
