@@ -14,7 +14,8 @@ datasource db {
 
 // Rates
 model Rate {
-  date DateTime @id @db.Date
+  id   Int      @id @default(autoincrement())
+  date DateTime @unique @db.Date
   usd Float
 }
 

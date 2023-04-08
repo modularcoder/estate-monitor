@@ -1,6 +1,7 @@
 import { chromium } from 'playwright'
 import { Rates } from '../_types'
 import dbService from '../_services/dbServie'
+import { addDays, startOfDay } from 'date-fns'
 
 type Execute = () => Promise<Rates | undefined>
 
@@ -9,15 +10,20 @@ type Execute = () => Promise<Rates | undefined>
 
 export const execute: Execute = async () => {
   // Trying to get the last data point, if it's today, then return it as a value
-  const foundRate = await dbService.rate.findUnique({
+  const foundRates = await dbService.rate.findMany({
     where: {
-      date: new Date(),
+      date: {
+        gte: startOfDay(new Date()),
+        lt: addDays(startOfDay(new Date()), 1),
+      },
     },
   })
 
-  if (foundRate) {
+  if (foundRates.length) {
+    console.log('Found the stored rate for this day')
+
     return {
-      USD: foundRate.usd,
+      USD: foundRates[0].usd,
     }
   }
 

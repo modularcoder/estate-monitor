@@ -2,7 +2,6 @@ import { config as dotenvConfig } from 'dotenv'
 
 dotenvConfig()
 
-import dbService from './_services/dbServie'
 import { execute as executeRates } from './_crawlers/cbaRates'
 import { execute as executeSell } from './_crawlers/listamSellBatch'
 import { execute as executeRent } from './_crawlers/listamRentBatch'
@@ -16,13 +15,6 @@ console.log(`Crawl interval set to ${CRAWL_INTERVAL / 1000} seconds`)
 
 async function start() {
   try {
-    await dbService.rate.create({
-      data: {
-        date: new Date(),
-        usd: 400,
-      },
-    })
-
     // Get exchange rates
     const rates = await executeRates()
 
