@@ -16,6 +16,7 @@
         "packages/*"
     ],
     "dependencies": {
-        "date-fns": "^2.29.3"
+        "date-fns": "^2.29.3",
+        "pm2": "^5.3.0"
     }
 }
