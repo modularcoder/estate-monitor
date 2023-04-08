@@ -5,7 +5,7 @@ import Link from "next/link";
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const greetingQuery = api.example.hello.useQuery({ text: "from tRPC" });
 
 
   return (
@@ -21,6 +21,7 @@ const Home: NextPage = () => {
                 <h1 className="text-center text-4xl leading-10 tracking-tight font-extrabold text-white">
                   Բնակարանների պատմական գները <span className="text-primary">Երևանում</span>
                 </h1>
+                { greetingQuery.data?.greeting }
             </header>
           </div>
           {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
