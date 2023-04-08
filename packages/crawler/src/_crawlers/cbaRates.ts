@@ -9,23 +9,23 @@ type Execute = () => Promise<Rates | undefined>
 // https://www.cba.am/_layouts/rssreader.aspx?rss=280F57B8-763C-4EE4-90E0-8136C13E47DA
 
 export const execute: Execute = async () => {
-  // Trying to get the last data point, if it's today, then return it as a value
-  const foundRates = await dbService.rate.findMany({
-    where: {
-      date: {
-        gte: startOfDay(new Date()),
-        lt: addDays(startOfDay(new Date()), 1),
-      },
-    },
-  })
+  // // Trying to get the last data point, if it's today, then return it as a value
+  // const foundRates = await dbService.rate.findMany({
+  //   where: {
+  //     date: {
+  //       gte: startOfDay(new Date()),
+  //       lt: addDays(startOfDay(new Date()), 1),
+  //     },
+  //   },
+  // })
 
-  if (foundRates.length) {
-    console.log('Found the stored rate for this day')
+  // if (foundRates.length) {
+  //   console.log('Found the stored rate for this day')
 
-    return {
-      USD: foundRates[0].usd,
-    }
-  }
+  //   return {
+  //     USD: foundRates[0].usd,
+  //   }
+  // }
 
   console.log('Starting CBA exchange rates extractor')
 
@@ -61,12 +61,12 @@ export const execute: Execute = async () => {
     console.log('Rates extracted: ', rates)
     // console.log('Store the rates in the DB')
 
-    await dbService.rate.create({
-      data: {
-        date: new Date(),
-        usd: usdValue,
-      },
-    })
+    // await dbService.rate.create({
+    //   data: {
+    //     date: new Date(),
+    //     usd: usdValue,
+    //   },
+    // })
 
     return rates
   } catch (err) {
