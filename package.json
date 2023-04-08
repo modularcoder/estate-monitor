@@ -6,6 +6,7 @@
         "dev:crawler": "npm run dev --workspace=@estate-monitor/crawler",
         "start:app": "npm run start --workspace=@estate-monitor/app",
         "start:crawler": "npm run start --workspace=@estate-monitor/crawler",
+        "build:digitalocean": "npm install --production=false && npm run build:crawler",
         "build:app": "npm run build --workspace=@estate-monitor/app",
         "build:crawler": "npm run build --workspace=@estate-monitor/crawler ",
         "build:core": "npm run generate --workspace=@estate-monitor/core",
