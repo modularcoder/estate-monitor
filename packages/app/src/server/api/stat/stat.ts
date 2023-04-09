@@ -6,7 +6,7 @@ export const statRouter = createTRPCRouter({
   getByWeek: publicProcedure
     .input(z.object({
       type: z.enum(['SELL', 'RENT']),
-      // weeknumber: z.number()
+      weeknumber: z.number()
     }))
     .query<{
       weeknumber: number,
@@ -24,7 +24,8 @@ export const statRouter = createTRPCRouter({
         FROM
           ListingApartment
         WHERE
-          ListingApartment.type= ${input.type}
+          ListingApartment.type= ${input.type} AND
+          WEEK(ListingApartment.createdAt) = ${input.weeknumber}
         GROUP BY
           WEEK(ListingApartment.createdAt), ListingApartment.district
       `
