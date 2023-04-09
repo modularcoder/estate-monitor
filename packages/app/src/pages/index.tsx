@@ -5,7 +5,8 @@ import Link from "next/link";
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
-  const greetingQuery = api.example.hello.useQuery({ text: "from tRPC" });
+  // const greetingQuery = api.example.hello.useQuery({ text: "from tRPC" });
+  const sellStatsQuery = api.stat.getByWeek.useQuery({ type: 'SELL' })
 
 
   return (
@@ -16,13 +17,46 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-          <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-            <header>
-                <h1 className="text-center text-4xl leading-10 tracking-tight font-extrabold text-white">
-                  Բնակարանների պատմական գները <span className="text-primary">Երևանում</span>
-                </h1>
-                { greetingQuery.data?.greeting }
+          <div className="container mx-auto px-4 py-16 ">
+            <header className="text-white mb-10">
+              <h1 className="text-4xl leading-10 tracking-tight font-extrabold text-white">
+                Բնակարանների վաճառքի և վարձակալության միջին գները <span className="text-primary">Երևանում</span>
+              </h1>
             </header>
+            <section className="text-white w-full">
+              <table className="w-full text-left">
+                <thead>
+                  <tr>
+                    <th>
+                      Վարչական շրջան
+                    </th>
+                    <th className="text-right">
+                      <div>Վաճառք</div>
+                      Դրամ, 1քմ
+                    </th>
+                    <th className="text-right">
+                      <div>Վաճառք</div>
+                      $, 1քմ
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { sellStatsQuery?.data?.length && sellStatsQuery.data.map(((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        { item.district}
+                      </td>
+                      <td className="text-right">
+                        { Math.round(item.statPricePerMeterAmd)} AMD
+                      </td>
+                      <td className="text-right">
+                        { Math.round(item.statPricePerMeterUsd)} $
+                      </td>
+                    </tr>
+                  )))}
+                </tbody>
+              </table>
+            </section>
           </div>
           {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <Link
