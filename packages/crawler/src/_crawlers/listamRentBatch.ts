@@ -1,6 +1,6 @@
 // https://www.list.am/category/56?type=1&n=1&crc=-1
 //
-import { chromium, Page } from 'playwright'
+import { chromium, Page, Browser } from 'playwright'
 import { subDays } from 'date-fns'
 import { Rates } from '../_types'
 import dbService from '../_services/dbServie'
@@ -14,11 +14,12 @@ const NAME = 'list.am RENT batch crawler'
 type ExecuteOptions = {
   rates: Rates
   numPages?: number
+  browser: Browser
 }
 
 type Execute = (options: ExecuteOptions) => Promise<void>
 
-export const execute: Execute = async ({ rates, numPages = 1 }) => {
+export const execute: Execute = async ({ rates, numPages = 1, browser }) => {
   if (!rates) {
     console.log(`${NAME}: Rates are not provided exiting process`)
     return
@@ -26,17 +27,6 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
 
   console.log(`${NAME} starting`)
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox'],
-    // proxy: {
-    //   // server: 'proxy.zenrows.com:8001',
-    //   // username: 'a2feb822f2d3fb0fffca6bf974440245ecf9bbb8',
-    //   // password: '',
-    //   // server:
-    //   // 'http://a2feb822f2d3fb0fffca6bf974440245ecf9bbb8:@proxy.zenrows.com:8001', //getRandomProxyServer(),
-    // },
-  })
   const context = await browser.newContext({
     ignoreHTTPSErrors: true,
   })
@@ -47,11 +37,6 @@ export const execute: Execute = async ({ rates, numPages = 1 }) => {
   for (const pageNum of pagesArray) {
     pagesResults.push(await executePage({ page, pageNum, rates }))
   }
-
-  // console.log('Pages results', JSON.stringify(pagesResults, null, 2))
-
-  console.info(`${NAME} Closing the browser`)
-  await browser.close()
 }
 
 const executePage = async ({
