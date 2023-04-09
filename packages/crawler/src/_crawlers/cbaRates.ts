@@ -1,14 +1,14 @@
-import { chromium } from 'playwright'
+import { chromium, Browser } from 'playwright'
 import { Rates } from '../_types'
 import dbService from '../_services/dbServie'
 import { addDays, startOfDay } from 'date-fns'
 
-type Execute = () => Promise<Rates | undefined>
+type Execute = (options: { browser: Browser }) => Promise<Rates | undefined>
 
 // RSS feed
 // https://www.cba.am/_layouts/rssreader.aspx?rss=280F57B8-763C-4EE4-90E0-8136C13E47DA
 
-export const execute: Execute = async () => {
+export const execute: Execute = async ({ browser }) => {
   // // Trying to get the last data point, if it's today, then return it as a value
   // const foundRates = await dbService.rate.findMany({
   //   where: {
@@ -28,11 +28,6 @@ export const execute: Execute = async () => {
   // }
 
   console.log('Starting CBA exchange rates extractor')
-
-  const browser = await chromium.launch({
-    headless: true,
-    args: ['--no-sandbox'],
-  })
 
   try {
     const context = await browser.newContext()
@@ -72,7 +67,4 @@ export const execute: Execute = async () => {
   } catch (err) {
     console.error('Could not extrate rates', err)
   }
-
-  console.info('Closing the browser')
-  await browser.close()
 }
