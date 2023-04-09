@@ -1,12 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { getISOWeek } from 'date-fns'
 
 import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
   // const greetingQuery = api.example.hello.useQuery({ text: "from tRPC" });
-  const sellStatsQuery = api.stat.getByWeek.useQuery({ type: 'SELL' })
+  const statsQuerySell = api.stat.getByWeek.useQuery({ type: 'SELL', weeknumber: getISOWeek(new Date()) })
+  const statsQueryRent = api.stat.getByWeek.useQuery({ type: 'RENT', weeknumber: getISOWeek(new Date()) })
 
 
   return (
@@ -24,38 +26,40 @@ const Home: NextPage = () => {
               </h1>
             </header>
             <section className="text-white w-full">
-              <table className="w-full text-left">
-                <thead>
-                  <tr>
-                    <th>
-                      Վարչական շրջան
-                    </th>
-                    <th className="text-right">
-                      <div>Վաճառք</div>
-                      Դրամ, 1քմ
-                    </th>
-                    <th className="text-right">
-                      <div>Վաճառք</div>
-                      $, 1քմ
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  { sellStatsQuery?.data?.length && sellStatsQuery.data.map(((item, index) => (
-                    <tr key={index}>
-                      <td>
-                        { item.district}
-                      </td>
-                      <td className="text-right">
-                        { Math.round(item.statPricePerMeterAmd)} AMD
-                      </td>
-                      <td className="text-right">
-                        { Math.round(item.statPricePerMeterUsd)} $
-                      </td>
+              <div className="rounded shadow-md bg-white text-gray-600 overflow-hidden">
+                <table className="w-full text-left divide-y divide-gray-300">
+                  <thead>
+                    <tr>
+                      <th className="py-3.5 px-4 text-left text-sm font-semibold text-gray-900">
+                        Վարչական շրջան
+                      </th>
+                      <th className="py-3.5 px-4 text-right text-sm font-semibold text-gray-900">
+                        <div>Վաճառք</div>
+                        Դրամ/1քմ
+                      </th>
+                      <th className="py-3.5 px-4 text-right text-sm font-semibold text-gray-900">
+                        <div>Վաճառք</div>
+                        $/1քմ
+                      </th>
                     </tr>
-                  )))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className=" bg-white">
+                    { statsQuerySell?.data?.length && statsQuerySell.data.map(((item, index) => (
+                      <tr key={index} className={index % 2 === 0 ? undefined : 'bg-gray-100'}>
+                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                          { item.district}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 text-right">
+                          { Math.round(item.statPricePerMeterAmd)} AMD
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 text-right">
+                          { Math.round(item.statPricePerMeterUsd)} $
+                        </td>
+                      </tr>
+                    )))}
+                  </tbody>
+                </table>
+              </div>
             </section>
           </div>
           {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
