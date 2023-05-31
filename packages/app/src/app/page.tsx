@@ -1,13 +1,23 @@
 
 import Head from "next/head";
+import { format } from 'date-fns'
 import { getData } from './_actions/getData'
+import { getDistrictName } from '@/_services/localeService'
+
+const formatPrice = (price: number) => {
+  const divider = price >= 100000
+    ? 1000
+    : 100;
+
+  const priceRounded = Math.round(price / divider) * divider;
+
+  return priceRounded
+}
 
 
 export default async function Home() {
 
   const data = await getData();
-
-  console.log('data', data)
 
   return (
     <>
@@ -18,10 +28,13 @@ export default async function Home() {
       </Head>
       <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
           <div className="container mx-auto px-4 py-16 ">
-            <header className="text-white mb-10">
-              <h1 className="text-4xl leading-10 tracking-tight font-extrabold text-white">
+            <header className="text-white mb-8">
+              <h1 className="text-4xl leading-10 tracking-tight text-white mb-8">
                 Բնակարանների վաճառքի և վարձակալության միջին գները <span className="text-primary">Երևանում</span>
               </h1>
+              <h2 className="text-xl">
+                {format(data.startDate, 'dd.MM.yyyy')} - {format(data.endDate, 'dd.MM.yyyy')}
+              </h2>
             </header>
             <section className="text-white w-full">
               <div className="rounded shadow-md bg-white text-gray-600 overflow-hidden">
@@ -48,13 +61,13 @@ export default async function Home() {
                     { data.items.map(((item, index) => (
                       <tr key={index} className={index % 2 === 0 ? undefined : 'bg-gray-100'}>
                         <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                          { item.district}
+                          { getDistrictName(item.district)}
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 text-right">
-                          { Math.round(item.sellPricePerMeterAmd)} AMD
+                          { formatPrice(item.sellPricePerMeterAmd)} AMD
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 text-right">
-                          { Math.round(item.rentPricePerMeterAmd)} AMD
+                          { formatPrice(item.rentPricePerMeterAmd)} AMD
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 text-right">
                           { Math.round(10000 * (item.rentPricePerMeterAmd / item.sellPricePerMeterAmd)) / 10000}
