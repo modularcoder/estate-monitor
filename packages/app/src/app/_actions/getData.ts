@@ -27,8 +27,8 @@ export async function getData() : Promise<Data> {
 
   const todayDate = new Date().getDate()
 
-  const startDate = startOfMonth(new Date());
-  const endDate = endOfMonth(new Date());
+  let startDate = startOfMonth(new Date());
+  let endDate = endOfMonth(new Date());
 
   // Month just started, show previous months
   if (todayDate < 4) {
