@@ -1,14 +1,15 @@
-// import { getISOWeek, getMonth } from 'date-fns'
+import { getISOWeek, getMonth, startOfMonth, endOfMonth, sub, subMonths, format } from 'date-fns'
+import { type District } from '@/_types'
 import { prisma } from '@/db'
 
 type DataItemRent = {
-  district: string,
+  district: District,
   rentPricePerMeterUsd: number,
   rentPricePerMeterAmd: number,
 }
 
 type DataItemSell = {
-  district: string,
+  district: District,
   sellPricePerMeterUsd: number
   sellPricePerMeterAmd: number,
 }
@@ -16,19 +17,24 @@ type DataItemSell = {
 type DataItem = DataItemRent & DataItemSell
 
 type Data = {
+  startDate: Date,
+  endDate: Date,
   items: DataItem[]
 }
 
 export async function getData() : Promise<Data> {
   'use server';
 
-  // const currentWeek = getISOWeek(new Date())
-  const currentMonth = new Date().getMonth()
+  const todayDate = new Date().getDate()
 
+  const startDate = startOfMonth(new Date());
+  const endDate = endOfMonth(new Date());
 
-  // js counts months from 0 to 11
-  // mysql counts months from 1 to 12
-  // need to increase the js month value by one
+  // Month just started, show previous months
+  if (todayDate < 4) {
+    startDate = subMonths(startDate, 1)
+    endDate = subMonths(endDate, 1)
+  }
 
   const rentData: DataItemRent[] = await prisma.$queryRaw`
     SELECT
@@ -39,12 +45,11 @@ export async function getData() : Promise<Data> {
       ListingApartment
     WHERE
       ListingApartment.type= 'RENT' AND
-      MONTH(ListingApartment.createdAt) = ${currentMonth + 1}
+      ListingApartment.createdAt >= ${startDate} AND
+      ListingApartment.createdAt <= ${endDate}
     GROUP BY
       ListingApartment.district
     `
-
-
 
   const sellData: DataItemSell[] = await prisma.$queryRaw`
     SELECT
@@ -55,7 +60,8 @@ export async function getData() : Promise<Data> {
       ListingApartment
     WHERE
       ListingApartment.type= 'SELL' AND
-      MONTH(ListingApartment.createdAt) = ${currentMonth + 1}
+      ListingApartment.createdAt >= ${startDate} AND
+      ListingApartment.createdAt <= ${endDate}
     GROUP BY
       ListingApartment.district
     `
@@ -82,7 +88,8 @@ export async function getData() : Promise<Data> {
 
 
   return {
-    currentMonth,
+    startDate,
+    endDate,
     items,
   } as Data
 }
