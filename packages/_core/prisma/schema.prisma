@@ -109,6 +109,18 @@ model ListingApartment {
   updatedAt DateTime    @updatedAt
   createdAt DateTime    @default(now())
 
+
+  @@index([district])
+  @@index([isNewDevelopment])
+  @@index([statNoRooms])
+  @@index([statPricePerMeterAmd])
+  @@index([statPricePerMeterUsd])
+  @@index([statBuildingFloors])
+  @@index([statFloor])
+  @@index([statFloorIsLast])
+  @@index([statFloorIsFirst])
+
+  @@index([type])
   @@index([extId])
   @@index([extId, createdAt(sort: Desc)])
 }
