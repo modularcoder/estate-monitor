@@ -29,6 +29,12 @@ export const execute: Execute = async ({ rates, numPages = 1, browser }) => {
     ignoreHTTPSErrors: true,
   })
   const page = await context.newPage()
+  // Set custom headers
+  await page.setExtraHTTPHeaders({
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+  })
   const pagesArray = Array.from({ length: numPages }, (v, i) => i + 1)
 
   const pagesResults = []
@@ -51,7 +57,7 @@ const executePage = async ({
   }?type=1&n=1&crc=-1`
 
   await page.goto(url)
-  await page.waitForSelector('.dlf')
+  await page.waitForSelector('.dl')
 
   const itemElements = await page.$$('.gl a')
   const items = []

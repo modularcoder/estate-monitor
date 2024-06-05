@@ -55,7 +55,7 @@ const executePage = async ({
   await page.goto(url)
   await page.waitForSelector('.dlf')
 
-  const itemElements = await page.$$('.gl a')
+  const itemElements = await page.$$('.dl a')
   const items = []
 
   // Process items from DOM
