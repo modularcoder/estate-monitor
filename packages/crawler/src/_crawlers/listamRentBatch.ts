@@ -31,6 +31,11 @@ export const execute: Execute = async ({ rates, numPages = 1, browser }) => {
     ignoreHTTPSErrors: true,
   })
   const page = await context.newPage()
+  await page.setExtraHTTPHeaders({
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+  })
   const pagesArray = Array.from({ length: numPages }, (v, i) => i + 1)
 
   const pagesResults = []
@@ -102,11 +107,17 @@ const executePage = async ({
     (item) => !existingItemsIds.includes(item.extId),
   )
 
-  const createMany = await dbService.listingApartment.createMany({
-    data: itemsNew,
-  })
+  console.info('[itemsNew[0]]', [itemsNew[0]])
 
-  console.info(`${NAME} Page ${pageNum}: ${createMany.count} items injected`)
+  try {
+    const createMany = await dbService.listingApartment.createMany({
+      data: itemsNew,
+    })
+
+    console.info(`${NAME} Page ${pageNum}: ${createMany.count} items injected`)
+  } catch (err) {
+    console.warn('Warning', err)
+  }
 
   return items
 }

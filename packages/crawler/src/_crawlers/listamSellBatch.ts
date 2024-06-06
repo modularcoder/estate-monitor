@@ -106,11 +106,14 @@ const executePage = async ({
     (item) => !existingItemsIds.includes(item.extId),
   )
 
-  const createMany = await dbService.listingApartment.createMany({
-    data: itemsNew,
-  })
-
-  console.info(`${NAME} Page ${pageNum}: ${createMany.count} items injected`)
+  try {
+    const createMany = await dbService.listingApartment.createMany({
+      data: itemsNew,
+    })
+    console.info(`${NAME} Page ${pageNum}: ${createMany.count} items injected`)
+  } catch (err) {
+    console.warn('Warning', err)
+  }
 
   return items
 }
