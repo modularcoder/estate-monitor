@@ -107,8 +107,6 @@ const executePage = async ({
     (item) => !existingItemsIds.includes(item.extId),
   )
 
-  console.info('[itemsNew[0]]', [itemsNew[0]])
-
   try {
     const createMany = await dbService.listingApartment.createMany({
       data: itemsNew,

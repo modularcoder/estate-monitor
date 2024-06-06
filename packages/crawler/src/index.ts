@@ -1,4 +1,5 @@
-import { chromium } from 'playwright'
+import { chromium } from 'playwright-extra'
+import chromiumStealthPlugin from 'puppeteer-extra-plugin-stealth'
 import { config as dotenvConfig } from 'dotenv'
 
 dotenvConfig()
@@ -6,6 +7,10 @@ dotenvConfig()
 import { execute as executeRates } from './_crawlers/cbaRates'
 import { execute as executeSell } from './_crawlers/listamSellBatch'
 import { execute as executeRent } from './_crawlers/listamRentBatch'
+
+const stealth = chromiumStealthPlugin()
+
+chromium.use(stealth)
 
 // 60 minutes by default
 const CRAWL_INTERVAL = process.env.CRAWL_INTERVAL

@@ -7,6 +7,7 @@ export const districtCodesByName: { [key: string]: District } = {
   Արաբկիր: 'ARABKIR',
   Ավան: 'AVAN',
   Դավիթաշեն: 'DAVITASHEN',
+  Դավթաշեն: 'DAVITASHEN',
   Էրեբունի: 'EREBUNI',
   'Քանաքեռ Զեյթուն': 'QANAQER',
   Կենտրոն: 'KENTRON',
