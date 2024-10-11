@@ -32,15 +32,38 @@ export const execute: Execute = async ({ rates, numPages = 1, browser }) => {
   })
   const page = await context.newPage()
   await page.setExtraHTTPHeaders({
-    'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-    'Accept-Language': 'en-US,en;q=0.9',
+    // 'User-Agent':
+    //   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+    // 'Accept-Language': 'en-US,en;q=0.9',
   })
   const pagesArray = Array.from({ length: numPages }, (v, i) => i + 1)
 
   const pagesResults = []
   for (const pageNum of pagesArray) {
-    pagesResults.push(await executePage({ page, pageNum, rates }))
+    // Add a random delay of 1 to 5 seconds to simulate human behavior
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)),
+    )
+
+    // Scroll the pageination
+    await page.evaluate(() =>
+      // @ts-expect-error window is valid
+      window.scrollBy(0, window.innerHeight - 50 * Math.random()),
+    )
+
+    const pageResult = await executePage({ page, pageNum, rates })
+    pagesResults.push(pageResult)
+
+    // Add another random delay of 1 to 5 seconds
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)),
+    )
+
+    // const pagination = await page.$$('.dlf')
+    const paginationLinks = await page.$$('.dlf .pp a')
+    const paginationLinkNext = paginationLinks[paginationLinks.length - 1]
+
+    await paginationLinkNext.hover()
   }
 }
 

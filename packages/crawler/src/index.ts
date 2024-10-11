@@ -40,14 +40,14 @@ async function start() {
     await executeSell({
       browser,
       rates,
-      numPages: 10,
+      numPages: 3,
     })
 
     // Items for rent
     await executeRent({
       browser,
       rates,
-      numPages: 10,
+      numPages: 3,
     })
   } catch (e) {
     console.log('Error:')
